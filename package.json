@@ -11,7 +11,7 @@
     "format": "prettier --write **/*.{js,ts,tsx}",
     "lint": "eslint . --ext ts --ext tsx --ext js",
     "test": "jest --watch",
-    "test:ci": "yarn lint && yarn type-check && jest --ci"
+    "test:ci": "yarn lint && yarn type-check && jest --ci --passWithNoTests"
   },
   "husky": {
     "hooks": {
