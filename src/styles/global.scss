@@ -1,3 +1,7 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+.nums-tabular {
+  font-variant-numeric: tabular-nums;
+}
