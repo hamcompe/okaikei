@@ -1,36 +1,50 @@
 import Airtable from 'airtable'
-import { calculatePaymentSummary } from '../lib/data-process'
+import { calculatePaymentSummary, getPaymentSummary } from '../lib/data-process'
 
-function HomePage({ data }): JSX.Element {
+function HomePage({ displayData }): JSX.Element {
   return (
     <main>
-      <div className="container mx-auto px-6 pb-10">
-        <h1 className="text-3xl font-bold mt-8 mb-4">My Subscription</h1>
+      <div className="container mx-auto px-6 pt-10 pb-10">
         <div>
-          {data.map(({ memberName, subscribedService }) => (
-            <div key={memberName}>
-              <h2 className="text-2xl font-bold mb">{memberName}</h2>
+          {displayData.map(({ serviceName, members }) => (
+            <div key={serviceName}>
+              <h2 className="text-3xl font-bold mb-2">{serviceName}</h2>
               <div className="grid grid-cols-1 gap-2 mb-4">
-                {subscribedService.map(
-                  ({ service, totalPaidAmount, needToPayAmount }) => (
-                    <div
-                      className="bg-white border px-4 py-2 rounded-lg"
-                      key={service}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium">{service}</p>
-                        </div>
-                        <div className="ml-2">
-                          <p className="font-bold text-2xl nums-tabular tracking-tight">
-                            {totalPaidAmount - needToPayAmount}
-                            <span className="font-normal text-base">฿</span>
-                          </p>
-                        </div>
+                {members.map(({ name, paymentInfo }) => (
+                  <div
+                    className="bg-white border px-4 py-2 rounded-lg"
+                    key={name}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-lg font-bold">{name}</p>
+                        <p
+                          className={`text-sm ${
+                            paymentInfo.isOverdue
+                              ? 'font-bold text-red-600'
+                              : 'font-medium text-gray-600'
+                          }`}
+                        >
+                          {paymentInfo.isOverdue
+                            ? 'overdue'
+                            : paymentInfo.availableUntil.date}
+                        </p>
+                      </div>
+                      <div className="ml-2">
+                        <p
+                          className={`font-bold text-2xl nums-tabular tracking-tight ${
+                            paymentInfo.isOverdue
+                              ? 'text-red-600'
+                              : 'text-blue-500'
+                          }`}
+                        >
+                          {paymentInfo.credit.display}
+                          <span className="text-base">฿</span>
+                        </p>
                       </div>
                     </div>
-                  ),
-                )}
+                  </div>
+                ))}
               </div>
             </div>
           ))}
@@ -80,9 +94,24 @@ export async function getStaticProps() {
     view: 'Table View',
   })
 
+  // console.log('transactionsData :>> ', transactionsData)
+  // console.log('memberData :>> ', memberData)
+  // const displayData = getPaymentSummary({
+  //   transactionsData,
+  //   serviceData,
+  //   subscriptionChangeLogData,
+  //   memberData,
+  // })
   return {
     props: {
       data: calculatePaymentSummary({
+        transactionsData,
+        serviceData,
+        subscriptionChangeLogData,
+        memberData,
+      }),
+
+      displayData: getPaymentSummary({
         transactionsData,
         serviceData,
         subscriptionChangeLogData,
